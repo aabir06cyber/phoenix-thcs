@@ -1,0 +1,151 @@
+<html lang="en">
+    <head>
+        <title>Phoenix THCS</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Rye&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <style>
+            .namearea {
+                width: 100%;
+                border-radius: 0px 0px 30px 30px;
+                background-image: linear-gradient(to right, rgb(232, 153, 6) 20%, rgb(216, 38, 6) 50%, rgb(226, 204, 7) 70%);
+                color: darkolivegreen;
+                font-family: Rye, serif;
+                font-size: 3rem;
+                font-weight: 400;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                gap: 20%;
+            }
+            body {
+                margin: 0px;
+                min-height: 100vh;
+                background: radial-gradient(ellipse at center, #3d1508 0%, #1c0803 55%, #0d0401 100%);
+                /*background-image: radial-gradient();
+                background-image: url("logo_fb.png");
+                background-size: 20% 20%;
+                background-position: bottom center;
+                background-repeat: no-repeat;*/
+            }
+            .notify {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                translate: -50% -50%;
+                padding: 20px;
+                border: 3px solid gray;
+                border-radius: 30px 0px 30px 0px;
+                text-align: center;
+                width: 50%;
+                background: transparent;
+                backdrop-filter: blur(10px);
+            }
+
+            .details {
+                font-family: Bricolage Grotesque, serif;
+                color: antiquewhite;
+            }
+
+            .mvp {
+                font-family: Bricolage Grotesque, serif;
+                color:cadetblue;
+                background-color: rgb(214, 214, 214);
+                border-radius: inherit;
+            }
+            h2 {
+                font-weight: 400;
+                font-size: 3rem;
+            }
+            h3 {
+                font-weight: 300;
+                font-size: 1.5rem;
+            }
+
+            .timer {
+                font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+                font-size: 1.5rem;
+                font-weight: 200;
+                text-align: center;
+                background-color: lightgray;
+                width: auto;
+                border-radius: 30px;
+                color: rgb(9, 91, 3);
+            }
+
+            .bottom-bar {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                pointer-events: none; /* Prevents container from blocking clicks behind it */
+            }
+
+            .bottom-left-logo {
+                height: 120px; /* Adjust size as needed */
+                width: auto;
+            }
+
+            .bottom-right-text {
+                font-family: 'Bricolage Grotesque', sans-serif;
+                color: #e2cc07;
+                font-size: 2rem;
+            }
+        </style>
+        <div class="namearea">
+            <div>Phoenix - TCHS</div>
+            <div style="width:4px; background-color: whitesmoke;"></div>
+            <div>FireBenders</div>
+        </div>
+        <div class="notify">
+            <div class="details">
+                
+                <h2>Coming Soon</h2>
+                <hr>
+                <h3>In building phase</h3>
+                <div class="timer" id="timer"></div>
+            </div>
+            <div class="mvp">
+                <h3><b>SIH PS ID 26162</b></h2>
+                <h2>MVP</h2>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <img src="logo_fb.png" alt="Logo" class="bottom-left-logo">
+            <div class="bottom-right-text">Building: Thermal Hotspot Classification System</div>
+        </div>
+        <script>
+            // Set target date (format: YYYY-MM-DDTHH:MM:SS)
+            const timerElement = document.getElementById('timer');
+            const targetDate = new Date("2026-09-10T23:59:59").getTime();
+
+            setInterval(() => {
+                const now = new Date().getTime();
+                const rawDifference = targetDate - now;
+                const isPast = rawDifference < 0;
+
+                // Use absolute value once past the target to measure elapsed time
+                const difference = Math.abs(rawDifference);
+
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                const timeString = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                if (isPast) {
+                timerElement.style.color = "#3a2202";
+                timerElement.textContent = `+${timeString} passed`;
+                } else {
+                timerElement.textContent = `${timeString} remaining`;
+                }
+            }, 1000);
+        </script>
+    </body>
+</html>
