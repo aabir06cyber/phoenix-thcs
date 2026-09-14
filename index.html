@@ -1,329 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Phoenix - Thermal Hotspot Classification System</title>
-  
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Monitoring Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #F3F4F6; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        #map { height: calc(100vh - 64px); width: 100%; z-index: 1; }
+        .crimson-border { border-top: 4px solid #9E1B1B; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        
+        /* Bottom Overlay Panel */
+        #bottom-panel {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 360px); 
+            max-width: 900px;
+            background: white;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        
+        /* Sidebar styling */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+        .map-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        .sidebar {
+            width: 340px;
+            background: white;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Custom map markers */
+        .custom-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-    }
-
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      background: #0f1115;
-    }
-
-    /* Top Crimson Header Banner */
-    header {
-      background: linear-gradient(135deg, #8b0000 0%, #a81c1c 50%, #5a0000 100%);
-      color: #ffffff;
-      padding: 10px 24px 6px 24px;
-      border-bottom: 2px solid #ff4d4d;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
-      z-index: 1000;
-    }
-
-    .brand-title {
-      font-size: 1.65rem;
-      font-weight: 800;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      text-shadow: 0 0 10px rgba(255, 120, 120, 0.6), 0 2px 4px rgba(0, 0, 0, 0.7);
-    }
-
-    .brand-title span {
-      font-size: 0.85rem;
-      font-weight: 400;
-      letter-spacing: 1px;
-      color: #ffcccc;
-      text-shadow: none;
-    }
-
-    /* Menu Navigation Bar */
-    .menu-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(255, 255, 255, 0.18);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 12px;
-    }
-
-    .nav-btn {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 5px 14px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-    }
-
-    .nav-btn:hover, .nav-btn.active {
-      background: #ffffff;
-      color: #8b0000;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-    }
-
-    .logout-btn {
-      background: rgba(0, 0, 0, 0.4);
-      color: #ff9999;
-      border: 1px solid rgba(255, 100, 100, 0.35);
-    }
-
-    .logout-btn:hover {
-      background: #ff4d4d;
-      color: #fff;
-    }
-
-    /* Map Viewport Area */
-    #map {
-      flex: 1;
-      width: 100%;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Floating Alerts Overlay (Right Side from Sketch) */
-    .alerts-overlay {
-      position: absolute;
-      top: 105px;
-      right: 20px;
-      width: 280px;
-      background: rgba(18, 20, 26, 0.92);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 77, 77, 0.4);
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-      z-index: 1000;
-      overflow: hidden;
-    }
-
-    .alerts-header {
-      background: #8b0000;
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 9px 14px;
-      border-bottom: 1px solid #ff4d4d;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    }
-
-    .alert-badge {
-      background: #ff4d4d;
-      color: #fff;
-      font-size: 0.7rem;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-weight: 800;
-    }
-
-    .alerts-body {
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .alert-card {
-      background: rgba(255, 255, 255, 0.04);
-      border-left: 3px solid #ff3333;
-      padding: 8px 10px;
-      border-radius: 0 4px 4px 0;
-      font-size: 0.78rem;
-      color: #e0e0e0;
-    }
-
-    .alert-card.warning {
-      border-left-color: #ff9900;
-    }
-
-    .alert-card.normal {
-      border-left-color: #00cc66;
-    }
-
-    .alert-title {
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 2px;
-      text-transform: uppercase;
-      font-size: 0.72rem;
-      letter-spacing: 0.5px;
-    }
-
-    /* Map Legend Overlay */
-    .map-legend {
-      position: absolute;
-      bottom: 25px;
-      left: 20px;
-      background: rgba(18, 20, 26, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
-      padding: 10px 14px;
-      z-index: 1000;
-      color: #f0f0f0;
-      font-size: 0.75rem;
-      display: flex;
-      gap: 16px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-  </style>
+        /* Clean popup style */
+        .leaflet-popup-content-wrapper {
+            border-radius: 4px;
+            padding: 2px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .leaflet-popup-content {
+            margin: 8px 12px;
+            font-weight: 600;
+            color: #9E1B1B;
+            font-size: 12px;
+        }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th { text-align: left; padding: 10px; border-bottom: 2px solid #E5E7EB; color: #4B5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 12px 10px; border-bottom: 1px solid #E5E7EB; color: #1F2937; font-size: 14px; font-weight: 500; }
+        .badge-fast { background-color: #DEF7EC; color: #03543F; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .badge-slow { background-color: #FEF3C7; color: #92400E; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-  <!-- Top Banner & Menu from Sketch -->
-  <header>
-    <div class="brand-title">
-      PHOENIX
-      <span>| Thermal Hotspot Classification System</span>
+    <!-- Header / Navbar -->
+    <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6 border-b border-gray-200 relative z-20">
+        <div class="flex items-center space-x-8">
+            <div class="flex flex-col">
+                <span class="text-xl font-bold tracking-wider text-[#9E1B1B]">PHOENIX</span>
+                <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Thermal Hotspot Classification System</span>
+            </div>
+            <nav class="hidden md:flex space-x-6 pl-8 border-l border-gray-200 h-8 items-center">
+                <a href="#" class="text-sm font-semibold text-[#9E1B1B]">Dashboard</a>
+                <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900">System Info.</a>
+                <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900">About</a>
+            </nav>
+        </div>
+        <div>
+            <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-800 px-4 py-2 border border-gray-200 rounded transition-colors">Logout</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Map Area -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Bottom Overlay Panel (Hidden by default, triggered on marker click) -->
+            <div id="bottom-panel" class="crimson-border">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold text-gray-800">Thermal Cluster Details</h3>
+                    <button onclick="closePanel()" class="text-gray-400 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cluster ID</th>
+                            <th>Classification Type</th>
+                            <th>Confidence Score ($S_{spatial}$)</th>
+                            <th>Routing Path</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="td-id">CLST_202604_N20_20479</td>
+                            <td id="td-class">Wildfire / Forest Fire</td>
+                            <td id="td-score">0.68</td>
+                            <td id="td-path"><span class="badge-fast">Fast (Stream 1)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <!-- Legend Section -->
+            <div class="p-6 border-b border-gray-100 flex-none">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4">Classification Legend</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #10B981;"></span> Wildfire / Forest fire</div>
+                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #EF4444;"></span> Industrial Fire</div>
+                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #F59E0B;"></span> Persistent Industrial Activity</div>
+                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #3B82F6;"></span> Mining Activities</div>
+                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #8B5CF6;"></span> Stubble Burning</div>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div class="p-6 flex-grow flex flex-col bg-gray-50/50">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-[#9E1B1B] mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    System Alerts
+                </h2>
+                <div class="space-y-4 overflow-y-auto pr-2">
+                    
+                    <div class="bg-white p-3 rounded border border-orange-200 shadow-sm border-l-4 border-l-orange-500">
+                        <p class="text-sm font-medium text-gray-800">Persistent thermal source detected near [22.93, 76.11].</p>
+                    </div>
+
+                    <div class="bg-white p-3 rounded border border-gray-200 shadow-sm border-l-4 border-l-gray-400">
+                        <p class="text-sm font-medium text-gray-800">FIRMS NRT data payload synced successfully. 47 new clusters added.</p>
+                    </div>
+
+                    <div class="bg-white p-3 rounded border border-red-200 shadow-sm border-l-4 border-l-red-500">
+                        <p class="text-sm font-medium text-gray-800">High confidence industrial fire classified in Region 4. Logging to database.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="menu-bar">
-      <div class="nav-links">
-        <a class="nav-btn active" href="#">Info.</a>
-        <a class="nav-btn" href="#">System</a>
-        <a class="nav-btn" href="#">About</a>
-      </div>
-      <a class="nav-btn logout-btn" href="#">Logout</a>
-    </div>
-  </header>
 
-  <!-- Full Leaflet Map Viewport -->
-  <div id="map"></div>
+    <script>
+        // Initialize map (Centered on India)
+        var map = L.map('map', {
+            zoomControl: false 
+        }).setView([22.5, 79.0], 5);
 
-  <!-- Floating Alerts Window from Sketch -->
-  <div class="alerts-overlay">
-    <div class="alerts-header">
-      <span>Active Alerts</span>
-      <span class="alert-badge">3 LIVE</span>
-    </div>
-    <div class="alerts-body">
-      <div class="alert-card">
-        <div class="alert-title" style="color: #ff5252;">Industrial Flare Zone</div>
-        <div>Haldia Refinery Complex (FRP: 48.2 MW)</div>
-      </div>
-      <div class="alert-card warning">
-        <div class="alert-title" style="color: #ffb142;">Crop Residue / Stubble</div>
-        <div>Punjab South Sector (FRP: 18.5 MW)</div>
-      </div>
-      <div class="alert-card normal">
-        <div class="alert-title" style="color: #2ed573;">Monitored Forest Reserve</div>
-        <div>Simlipal Perimeter (Normal Baseline)</div>
-      </div>
-    </div>
-  </div>
+        L.control.zoom({ position: 'topleft' }).addTo(map);
 
-  <!-- Map Legend -->
-  <div class="map-legend">
-    <div class="legend-item">
-      <div class="legend-dot" style="background: #e74c3c;"></div>
-      <span>Persistent Industrial</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: #e67e22;"></div>
-      <span>Agricultural / Stubble</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: #2ecc71;"></div>
-      <span>Natural Forest (Safe)</span>
-    </div>
-  </div>
+        // Stadia Maps Light Theme (Domain authenticated)
+        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+            maxZoom: 20
+        }).addTo(map);
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    // Initialize Leaflet map centered over Eastern/Central India
-    const map = L.map('map', {
-      zoomControl: false
-    }).setView([22.5, 84.5], 6);
+        // Colors mapping to legends
+        const colors = {
+            'Wildfire / Forest Fire': '#10B981',    
+            'Industrial Fire': '#EF4444',  
+            'Persistent Industrial Activity': '#F59E0B',  
+            'Mining Activity': '#3B82F6',      
+            'Stubble Burning': '#8B5CF6',
+            'Uncertain / Ambiguous Event': '#4B5563' // Gray for uncertain
+        };
 
-    // Subtle dark-themed tiles suited for thermal data contrast
-    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-  maxZoom: 20,
-  attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-}).addTo(map);
+        // Real data extracted from your SIH v2 notebook
+        const fireData = [
+            { lat: 21.56127, lng: 76.43035, id: 'CLST_202604_N20_20479', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 26.79845, lng: 83.67700, id: 'CLST_202604_N20_33206', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 25.77774, lng: 77.08861, id: 'CLST_202604_N20_41586', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 22.93340, lng: 76.11311, id: 'CLST_202604_N20_30577', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 29.63901, lng: 80.00315, id: 'CLST_202604_N20_35332', cls: 'Wildfire / Forest Fire', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            // Extra dummy points to populate map
+            { lat: 28.704, lng: 77.102, id: 'CLST_202604_N20_99101', cls: 'Stubble Burning', score: '0.88', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 22.572, lng: 88.363, id: 'CLST_202604_N20_88202', cls: 'Persistent Industrial Activity', score: '0.92', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 23.344, lng: 85.309, id: 'CLST_202604_N20_77303', cls: 'Mining Activity', score: '0.78', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 19.076, lng: 72.877, id: 'CLST_202604_N20_66404', cls: 'Industrial Fire', score: '0.95', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 26.846, lng: 80.946, id: 'CLST_202604_N20_55505', cls: 'Stubble Burning', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' }
+        ];
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+        const bottomPanel = document.getElementById('bottom-panel');
+        const tdId = document.getElementById('td-id');
+        const tdClass = document.getElementById('td-class');
+        const tdScore = document.getElementById('td-score');
+        const tdPath = document.getElementById('td-path');
 
-    // Zone 1 (Red): Persistent Industrial Flare (e.g., Haldia / West Bengal coast)
-    const redZone = L.circle([22.03, 88.08], {
-      color: '#ff2a2a',
-      fillColor: '#e74c3c',
-      fillOpacity: 0.55,
-      radius: 42000,
-      weight: 2
-    }).addTo(map);
-    redZone.bindPopup("<b>Zone: Industrial / Refinery</b><br>FRP: 48.2 MW | High Thermal Persistence");
+        function closePanel() {
+            bottomPanel.style.display = 'none';
+        }
 
-    // Zone 2 (Orange): Agricultural Stubble Burning (e.g., Jharkhand / Odisha agricultural tract)
-    const orangeZone = L.circle([21.8, 85.8], {
-      color: '#ff8c1a',
-      fillColor: '#e67e22',
-      fillOpacity: 0.5,
-      radius: 38000,
-      weight: 2
-    }).addTo(map);
-    orangeZone.bindPopup("<b>Zone: Agricultural Burning</b><br>FRP: 18.5 MW | Moderate Persistence");
+        // Plot markers
+        fireData.forEach(data => {
+            const markerColor = colors[data.cls] || '#1F2937';
+            
+            const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="width: 100%; height: 100%; border-radius: 50%; background-color: ${markerColor};"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8],
+                popupAnchor: [0, -10]
+            });
 
-    // Zone 3 (Green): Forest Cover / Protected Reserve (Baseline check)
-    const greenZone = L.circle([23.5, 83.2], {
-      color: '#27ae60',
-      fillColor: '#2ecc71',
-      fillOpacity: 0.45,
-      radius: 46000,
-      weight: 2
-    }).addTo(map);
-    greenZone.bindPopup("<b>Zone: Forest Canopy</b><br>Normal Thermal Range | High NDVI");
+            const marker = L.marker([data.lat, data.lng], { icon: customIcon }).addTo(map);
+            
+            // Add the "Viewing this" popup
+            marker.bindPopup("Viewing this", { closeButton: false });
 
-    // Zone 4 (Red): Secondary Industrial Mining / Steel Hub
-    const redZone2 = L.circle([23.8, 86.4], {
-      color: '#ff2a2a',
-      fillColor: '#c0392b',
-      fillOpacity: 0.55,
-      radius: 32000,
-      weight: 2
-    }).addTo(map);
-    redZone2.bindPopup("<b>Zone: Steel & Mining Hub</b><br>FRP: 35.1 MW | Persistent Anomaly");
-  </script>
+            // Click event to update table and show popup
+            marker.on('click', function (e) {
+                this.openPopup();
+                
+                // Update table details dynamically
+                tdId.innerText = data.id;
+                tdClass.innerText = data.cls;
+                tdScore.innerText = data.score;
+                tdPath.innerHTML = `<span class="${data.badge}">${data.path}</span>`;
+                
+                bottomPanel.style.display = 'block';
+            });
+        });
+
+    </script>
 </body>
 </html>
