@@ -148,6 +148,7 @@
                     <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #F59E0B;"></span> Persistent Industrial Activity</div>
                     <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #3B82F6;"></span> Mining Activities</div>
                     <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #8B5CF6;"></span> Stubble Burning</div>
+                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #4B5563;"></span> Uncertain / Pending</div>
                 </div>
             </div>
 
@@ -162,7 +163,7 @@
                 <div class="space-y-4 overflow-y-auto pr-2">
                     
                     <div class="bg-white p-3 rounded border border-orange-200 shadow-sm border-l-4 border-l-orange-500">
-                        <p class="text-sm font-medium text-gray-800">Persistent thermal source detected near [22.93, 76.11].</p>
+                        <p class="text-sm font-medium text-gray-800">Persistent thermal source detected near coordinates [22.93, 76.11].</p>
                     </div>
 
                     <div class="bg-white p-3 rounded border border-gray-200 shadow-sm border-l-4 border-l-gray-400">
@@ -186,10 +187,10 @@
 
         L.control.zoom({ position: 'topleft' }).addTo(map);
 
-        // Stadia Maps Light Theme (Domain authenticated)
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-            maxZoom: 20
+        // Standard free OpenStreetMap tiles (No API Key Required)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
         }).addTo(map);
 
         // Colors mapping to legends
@@ -202,19 +203,53 @@
             'Uncertain / Ambiguous Event': '#4B5563' // Gray for uncertain
         };
 
-        // Real data extracted from your SIH v2 notebook
+        // Real data extracted from your SIH v2 notebook + realistic dummy points to fill the map
         const fireData = [
-            { lat: 21.56127, lng: 76.43035, id: 'CLST_202604_N20_20479', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 26.79845, lng: 83.67700, id: 'CLST_202604_N20_33206', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 25.77774, lng: 77.08861, id: 'CLST_202604_N20_41586', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 22.93340, lng: 76.11311, id: 'CLST_202604_N20_30577', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 29.63901, lng: 80.00315, id: 'CLST_202604_N20_35332', cls: 'Wildfire / Forest Fire', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            // Extra dummy points to populate map
-            { lat: 28.704, lng: 77.102, id: 'CLST_202604_N20_99101', cls: 'Stubble Burning', score: '0.88', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 22.572, lng: 88.363, id: 'CLST_202604_N20_88202', cls: 'Persistent Industrial Activity', score: '0.92', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 23.344, lng: 85.309, id: 'CLST_202604_N20_77303', cls: 'Mining Activity', score: '0.78', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 19.076, lng: 72.877, id: 'CLST_202604_N20_66404', cls: 'Industrial Fire', score: '0.95', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 26.846, lng: 80.946, id: 'CLST_202604_N20_55505', cls: 'Stubble Burning', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' }
+            { lat: 21.56127, lng: 76.43035, id: 'CLST_202604_N20_10000', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 26.79845, lng: 83.677, id: 'CLST_202604_N20_10001', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 25.77774, lng: 77.08861, id: 'CLST_202604_N20_10002', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 22.9334, lng: 76.11311, id: 'CLST_202604_N20_10003', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 29.63901, lng: 80.00315, id: 'CLST_202604_N20_10004', cls: 'Wildfire / Forest Fire', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 19.076, lng: 72.877, id: 'CLST_202604_N20_10005', cls: 'Mining Activity', score: '0.66', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 28.704, lng: 77.102, id: 'CLST_202604_N20_10006', cls: 'Wildfire / Forest Fire', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 13.082, lng: 80.27, id: 'CLST_202604_N20_10007', cls: 'Stubble Burning', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 22.572, lng: 88.363, id: 'CLST_202604_N20_10008', cls: 'Stubble Burning', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 17.385, lng: 78.486, id: 'CLST_202604_N20_10009', cls: 'Uncertain / Ambiguous Event', score: '0.57', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 23.022, lng: 72.571, id: 'CLST_202604_N20_10010', cls: 'Mining Activity', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 18.52, lng: 73.856, id: 'CLST_202604_N20_10011', cls: 'Stubble Burning', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 26.912, lng: 75.787, id: 'CLST_202604_N20_10012', cls: 'Wildfire / Forest Fire', score: '0.9', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 26.846, lng: 80.946, id: 'CLST_202604_N20_10013', cls: 'Industrial Fire', score: '0.57', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 21.145, lng: 79.088, id: 'CLST_202604_N20_10014', cls: 'Persistent Industrial Activity', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 22.719, lng: 75.857, id: 'CLST_202604_N20_10015', cls: 'Industrial Fire', score: '0.63', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 19.997, lng: 73.789, id: 'CLST_202604_N20_10016', cls: 'Persistent Industrial Activity', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 22.303, lng: 70.802, id: 'CLST_202604_N20_10017', cls: 'Mining Activity', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 26.218, lng: 78.182, id: 'CLST_202604_N20_10018', cls: 'Persistent Industrial Activity', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 23.164, lng: 79.931, id: 'CLST_202604_N20_10019', cls: 'Wildfire / Forest Fire', score: '0.89', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 21.17, lng: 72.831, id: 'CLST_202604_N20_10020', cls: 'Stubble Burning', score: '0.69', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 15.299, lng: 74.124, id: 'CLST_202604_N20_10021', cls: 'Mining Activity', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 25.594, lng: 85.137, id: 'CLST_202604_N20_10022', cls: 'Persistent Industrial Activity', score: '0.92', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 20.296, lng: 85.824, id: 'CLST_202604_N20_10023', cls: 'Stubble Burning', score: '0.94', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 23.344, lng: 85.309, id: 'CLST_202604_N20_10024', cls: 'Persistent Industrial Activity', score: '0.84', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 26.144, lng: 91.736, id: 'CLST_202604_N20_10025', cls: 'Uncertain / Ambiguous Event', score: '0.42', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 23.831, lng: 91.286, id: 'CLST_202604_N20_10026', cls: 'Uncertain / Ambiguous Event', score: '0.45', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 27.338, lng: 88.606, id: 'CLST_202604_N20_10027', cls: 'Persistent Industrial Activity', score: '0.98', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 31.104, lng: 77.173, id: 'CLST_202604_N20_10028', cls: 'Industrial Fire', score: '0.61', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 11.016, lng: 76.955, id: 'CLST_202604_N20_10029', cls: 'Mining Activity', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 24.5854, lng: 73.7125, id: 'CLST_202604_N20_10030', cls: 'Uncertain / Ambiguous Event', score: '0.6', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 12.9716, lng: 77.5946, id: 'CLST_202604_N20_10031', cls: 'Industrial Fire', score: '0.49', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 10.8505, lng: 76.2711, id: 'CLST_202604_N20_10032', cls: 'Industrial Fire', score: '0.56', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 15.3173, lng: 75.7139, id: 'CLST_202604_N20_10033', cls: 'Uncertain / Ambiguous Event', score: '0.62', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 20.5937, lng: 78.9629, id: 'CLST_202604_N20_10034', cls: 'Uncertain / Ambiguous Event', score: '0.42', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 21.2514, lng: 81.6296, id: 'CLST_202604_N20_10035', cls: 'Uncertain / Ambiguous Event', score: '0.44', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 25.3176, lng: 82.9739, id: 'CLST_202604_N20_10036', cls: 'Uncertain / Ambiguous Event', score: '0.46', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 22.2587, lng: 71.1924, id: 'CLST_202604_N20_10037', cls: 'Mining Activity', score: '0.78', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 27.1767, lng: 78.0081, id: 'CLST_202604_N20_10038', cls: 'Uncertain / Ambiguous Event', score: '0.57', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 26.4499, lng: 80.3319, id: 'CLST_202604_N20_10039', cls: 'Industrial Fire', score: '0.56', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 30.7333, lng: 76.7794, id: 'CLST_202604_N20_10040', cls: 'Wildfire / Forest Fire', score: '0.73', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 24.1998, lng: 86.3005, id: 'CLST_202604_N20_10041', cls: 'Wildfire / Forest Fire', score: '0.92', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 11.9416, lng: 79.8083, id: 'CLST_202604_N20_10042', cls: 'Mining Activity', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
+            { lat: 14.4673, lng: 78.8242, id: 'CLST_202604_N20_10043', cls: 'Industrial Fire', score: '0.62', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
+            { lat: 28.6139, lng: 77.209, id: 'CLST_202604_N20_10044', cls: 'Stubble Burning', score: '0.94', path: 'Fast (Stream 1)', badge: 'badge-fast' }
         ];
 
         const bottomPanel = document.getElementById('bottom-panel');
@@ -225,6 +260,7 @@
 
         function closePanel() {
             bottomPanel.style.display = 'none';
+            map.closePopup();
         }
 
         // Plot markers
