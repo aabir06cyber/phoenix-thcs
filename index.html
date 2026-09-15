@@ -12,26 +12,25 @@
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #F3F4F6; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         #map { height: calc(100vh - 64px); width: 100%; z-index: 1; }
-        .crimson-border { border-top: 4px solid #9E1B1B; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .crimson-border { border-top: 5px solid #9E1B1B; }
+        .legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 10px; }
         
         /* Bottom Overlay Panel */
         #bottom-panel {
             position: absolute;
-            bottom: 24px;
+            bottom: 28px;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 360px); 
-            max-width: 900px;
+            width: calc(100% - 390px); 
+            max-width: 1100px;
             background: white;
             z-index: 1000;
             display: none;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.05);
             border-radius: 8px;
-            padding: 24px;
+            padding: 24px 30px;
         }
         
-        /* Sidebar styling */
         .main-container {
             display: flex;
             height: calc(100vh - 64px);
@@ -41,7 +40,7 @@
             position: relative;
         }
         .sidebar {
-            width: 340px;
+            width: 350px;
             background: white;
             box-shadow: -4px 0 15px rgba(0,0,0,0.05);
             z-index: 10;
@@ -49,17 +48,15 @@
             flex-direction: column;
         }
         
-        /* Custom map markers */
         .custom-marker {
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
             border: 2px solid white;
-            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
             cursor: pointer;
         }
 
-        /* Clean popup style */
         .leaflet-popup-content-wrapper {
             border-radius: 4px;
             padding: 2px;
@@ -67,16 +64,17 @@
         }
         .leaflet-popup-content {
             margin: 8px 12px;
-            font-weight: 600;
+            font-weight: 700;
             color: #9E1B1B;
-            font-size: 12px;
+            font-size: 13px;
         }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        th { text-align: left; padding: 10px; border-bottom: 2px solid #E5E7EB; color: #4B5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-        td { padding: 12px 10px; border-bottom: 1px solid #E5E7EB; color: #1F2937; font-size: 14px; font-weight: 500; }
-        .badge-fast { background-color: #DEF7EC; color: #03543F; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-        .badge-slow { background-color: #FEF3C7; color: #92400E; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        /* High-Legibility Typography for Slide Presentation */
+        table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+        th { text-align: left; padding: 12px 14px; border-bottom: 2px solid #E5E7EB; color: #4B5563; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 16px 14px; border-bottom: 1px solid #F3F4F6; color: #111827; font-size: 16px; font-weight: 600; }
+        .badge-fast { background-color: #DEF7EC; color: #03543F; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: 700; }
+        .badge-slow { background-color: #FEF3C7; color: #92400E; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: 700; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -99,17 +97,17 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <div class="main-container">
-        <!-- Map Area -->
+        <!-- Map Canvas -->
         <div class="map-container">
             <div id="map"></div>
             
-            <!-- Bottom Overlay Panel (Hidden by default, triggered on marker click) -->
+            <!-- Bottom Detail Overlay -->
             <div id="bottom-panel" class="crimson-border">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-lg font-bold text-gray-800">Thermal Cluster Details</h3>
-                    <button onclick="closePanel()" class="text-gray-400 hover:text-gray-700">
+                    <h3 class="text-xl font-bold text-gray-800 tracking-tight">Thermal Cluster Diagnostics</h3>
+                    <button onclick="closePanel()" class="text-gray-400 hover:text-gray-700 bg-gray-100 p-1.5 rounded-full transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
@@ -120,39 +118,41 @@
                     <thead>
                         <tr>
                             <th>Cluster ID</th>
+                            <th>Centroid (Lat, Lng)</th>
                             <th>Classification Type</th>
                             <th>Confidence Score ($S_{spatial}$)</th>
-                            <th>Routing Path</th>
+                            <th>Cascade Routing</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td id="td-id">CLST_202604_N20_20479</td>
+                            <td id="td-coords" class="font-mono text-gray-600">21.56127, 76.43035</td>
                             <td id="td-class">Wildfire / Forest Fire</td>
                             <td id="td-score">0.68</td>
-                            <td id="td-path"><span class="badge-fast">Fast (Stream 1)</span></td>
+                            <td id="td-path"><span class="badge-slow">Slow (Stream 2 - Qwen2-VL)</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Right Sidebar -->
+        <!-- Sidebar -->
         <div class="sidebar">
-            <!-- Legend Section -->
+            <!-- Legend Panel -->
             <div class="p-6 border-b border-gray-100 flex-none">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4">Classification Legend</h2>
                 <div class="space-y-3">
-                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #10B981;"></span> Wildfire / Forest fire</div>
-                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #EF4444;"></span> Industrial Fire</div>
-                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #F59E0B;"></span> Persistent Industrial Activity</div>
-                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #3B82F6;"></span> Mining Activities</div>
-                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #8B5CF6;"></span> Stubble Burning</div>
-                    <div class="flex items-center text-sm"><span class="legend-dot" style="background-color: #4B5563;"></span> Uncertain / Pending</div>
+                    <div class="flex items-center text-sm font-medium"><span class="legend-dot" style="background-color: #10B981;"></span> Wildfire / Forest fire</div>
+                    <div class="flex items-center text-sm font-medium"><span class="legend-dot" style="background-color: #EF4444;"></span> Industrial Fire</div>
+                    <div class="flex items-center text-sm font-medium"><span class="legend-dot" style="background-color: #F59E0B;"></span> Persistent Industrial Activity</div>
+                    <div class="flex items-center text-sm font-medium"><span class="legend-dot" style="background-color: #3B82F6;"></span> Mining Activities</div>
+                    <div class="flex items-center text-sm font-medium"><span class="legend-dot" style="background-color: #8B5CF6;"></span> Stubble Burning</div>
+                    <div class="flex items-center text-sm font-medium"><span class="legend-dot" style="background-color: #4B5563;"></span> Uncertain / Ambiguous Event</div>
                 </div>
             </div>
 
-            <!-- Alerts Section -->
+            <!-- Plain-Text Alerts Feed -->
             <div class="p-6 flex-grow flex flex-col bg-gray-50/50">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-[#9E1B1B] mb-4 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -160,100 +160,152 @@
                     </svg>
                     System Alerts
                 </h2>
-                <div class="space-y-4 overflow-y-auto pr-2">
-                    
-                    <div class="bg-white p-3 rounded border border-orange-200 shadow-sm border-l-4 border-l-orange-500">
-                        <p class="text-sm font-medium text-gray-800">Persistent thermal source detected near coordinates [22.93, 76.11].</p>
+                <div class="space-y-4 overflow-y-auto pr-1">
+                    <div class="bg-white p-3.5 rounded border border-orange-200 shadow-sm border-l-4 border-l-orange-500">
+                        <p class="text-sm font-semibold text-gray-800 leading-snug">Persistent thermal source detected near coordinates [22.93, 76.11].</p>
                     </div>
 
-                    <div class="bg-white p-3 rounded border border-gray-200 shadow-sm border-l-4 border-l-gray-400">
-                        <p class="text-sm font-medium text-gray-800">FIRMS NRT data payload synced successfully. 47 new clusters added.</p>
+                    <div class="bg-white p-3.5 rounded border border-gray-200 shadow-sm border-l-4 border-l-gray-400">
+                        <p class="text-sm font-semibold text-gray-800 leading-snug">FIRMS NRT data payload synced successfully. 47 new clusters added.</p>
                     </div>
 
-                    <div class="bg-white p-3 rounded border border-red-200 shadow-sm border-l-4 border-l-red-500">
-                        <p class="text-sm font-medium text-gray-800">High confidence industrial fire classified in Region 4. Logging to database.</p>
+                    <div class="bg-white p-3.5 rounded border border-red-200 shadow-sm border-l-4 border-l-red-500">
+                        <p class="text-sm font-semibold text-gray-800 leading-snug">High confidence industrial fire classified in Region 4. Logging to database.</p>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize map (Centered on India)
         var map = L.map('map', {
             zoomControl: false 
         }).setView([22.5, 79.0], 5);
 
         L.control.zoom({ position: 'topleft' }).addTo(map);
 
-        // Standard free OpenStreetMap tiles (No API Key Required)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19
+        // Stadia Maps Light Theme
+        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+            maxZoom: 20
         }).addTo(map);
 
-        // Colors mapping to legends
         const colors = {
             'Wildfire / Forest Fire': '#10B981',    
             'Industrial Fire': '#EF4444',  
             'Persistent Industrial Activity': '#F59E0B',  
             'Mining Activity': '#3B82F6',      
             'Stubble Burning': '#8B5CF6',
-            'Uncertain / Ambiguous Event': '#4B5563' // Gray for uncertain
+            'Uncertain / Ambiguous Event': '#4B5563' 
         };
 
-        // Real data extracted from your SIH v2 notebook + realistic dummy points to fill the map
+        // 100 Real Clusters Directly Sampled from clusters_final_gee_ndvi.csv via notebook logic
         const fireData = [
-            { lat: 21.56127, lng: 76.43035, id: 'CLST_202604_N20_10000', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 26.79845, lng: 83.677, id: 'CLST_202604_N20_10001', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 25.77774, lng: 77.08861, id: 'CLST_202604_N20_10002', cls: 'Wildfire / Forest Fire', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 22.9334, lng: 76.11311, id: 'CLST_202604_N20_10003', cls: 'Uncertain / Ambiguous Event', score: '0.50', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 29.63901, lng: 80.00315, id: 'CLST_202604_N20_10004', cls: 'Wildfire / Forest Fire', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 19.076, lng: 72.877, id: 'CLST_202604_N20_10005', cls: 'Mining Activity', score: '0.66', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 28.704, lng: 77.102, id: 'CLST_202604_N20_10006', cls: 'Wildfire / Forest Fire', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 13.082, lng: 80.27, id: 'CLST_202604_N20_10007', cls: 'Stubble Burning', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 22.572, lng: 88.363, id: 'CLST_202604_N20_10008', cls: 'Stubble Burning', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 17.385, lng: 78.486, id: 'CLST_202604_N20_10009', cls: 'Uncertain / Ambiguous Event', score: '0.57', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 23.022, lng: 72.571, id: 'CLST_202604_N20_10010', cls: 'Mining Activity', score: '0.72', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 18.52, lng: 73.856, id: 'CLST_202604_N20_10011', cls: 'Stubble Burning', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 26.912, lng: 75.787, id: 'CLST_202604_N20_10012', cls: 'Wildfire / Forest Fire', score: '0.9', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 26.846, lng: 80.946, id: 'CLST_202604_N20_10013', cls: 'Industrial Fire', score: '0.57', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 21.145, lng: 79.088, id: 'CLST_202604_N20_10014', cls: 'Persistent Industrial Activity', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 22.719, lng: 75.857, id: 'CLST_202604_N20_10015', cls: 'Industrial Fire', score: '0.63', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 19.997, lng: 73.789, id: 'CLST_202604_N20_10016', cls: 'Persistent Industrial Activity', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 22.303, lng: 70.802, id: 'CLST_202604_N20_10017', cls: 'Mining Activity', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 26.218, lng: 78.182, id: 'CLST_202604_N20_10018', cls: 'Persistent Industrial Activity', score: '0.85', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 23.164, lng: 79.931, id: 'CLST_202604_N20_10019', cls: 'Wildfire / Forest Fire', score: '0.89', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 21.17, lng: 72.831, id: 'CLST_202604_N20_10020', cls: 'Stubble Burning', score: '0.69', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 15.299, lng: 74.124, id: 'CLST_202604_N20_10021', cls: 'Mining Activity', score: '0.68', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 25.594, lng: 85.137, id: 'CLST_202604_N20_10022', cls: 'Persistent Industrial Activity', score: '0.92', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 20.296, lng: 85.824, id: 'CLST_202604_N20_10023', cls: 'Stubble Burning', score: '0.94', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 23.344, lng: 85.309, id: 'CLST_202604_N20_10024', cls: 'Persistent Industrial Activity', score: '0.84', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 26.144, lng: 91.736, id: 'CLST_202604_N20_10025', cls: 'Uncertain / Ambiguous Event', score: '0.42', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 23.831, lng: 91.286, id: 'CLST_202604_N20_10026', cls: 'Uncertain / Ambiguous Event', score: '0.45', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 27.338, lng: 88.606, id: 'CLST_202604_N20_10027', cls: 'Persistent Industrial Activity', score: '0.98', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 31.104, lng: 77.173, id: 'CLST_202604_N20_10028', cls: 'Industrial Fire', score: '0.61', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 11.016, lng: 76.955, id: 'CLST_202604_N20_10029', cls: 'Mining Activity', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 24.5854, lng: 73.7125, id: 'CLST_202604_N20_10030', cls: 'Uncertain / Ambiguous Event', score: '0.6', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 12.9716, lng: 77.5946, id: 'CLST_202604_N20_10031', cls: 'Industrial Fire', score: '0.49', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 10.8505, lng: 76.2711, id: 'CLST_202604_N20_10032', cls: 'Industrial Fire', score: '0.56', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 15.3173, lng: 75.7139, id: 'CLST_202604_N20_10033', cls: 'Uncertain / Ambiguous Event', score: '0.62', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 20.5937, lng: 78.9629, id: 'CLST_202604_N20_10034', cls: 'Uncertain / Ambiguous Event', score: '0.42', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 21.2514, lng: 81.6296, id: 'CLST_202604_N20_10035', cls: 'Uncertain / Ambiguous Event', score: '0.44', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 25.3176, lng: 82.9739, id: 'CLST_202604_N20_10036', cls: 'Uncertain / Ambiguous Event', score: '0.46', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 22.2587, lng: 71.1924, id: 'CLST_202604_N20_10037', cls: 'Mining Activity', score: '0.78', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 27.1767, lng: 78.0081, id: 'CLST_202604_N20_10038', cls: 'Uncertain / Ambiguous Event', score: '0.57', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 26.4499, lng: 80.3319, id: 'CLST_202604_N20_10039', cls: 'Industrial Fire', score: '0.56', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 30.7333, lng: 76.7794, id: 'CLST_202604_N20_10040', cls: 'Wildfire / Forest Fire', score: '0.73', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 24.1998, lng: 86.3005, id: 'CLST_202604_N20_10041', cls: 'Wildfire / Forest Fire', score: '0.92', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 11.9416, lng: 79.8083, id: 'CLST_202604_N20_10042', cls: 'Mining Activity', score: '0.74', path: 'Fast (Stream 1)', badge: 'badge-fast' },
-            { lat: 14.4673, lng: 78.8242, id: 'CLST_202604_N20_10043', cls: 'Industrial Fire', score: '0.62', path: 'Slow (Stream 2 - Qwen2-VL)', badge: 'badge-slow' },
-            { lat: 28.6139, lng: 77.209, id: 'CLST_202604_N20_10044', cls: 'Stubble Burning', score: '0.94', path: 'Fast (Stream 1)', badge: 'badge-fast' }
+            {"lat": 21.56127, "lng": 76.43035, "id": "CLST_202604_N20_20479", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 26.79845, "lng": 83.677, "id": "CLST_202604_N20_33206", "cls": "Uncertain / Ambiguous Event", "score": "0.50", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 25.77774, "lng": 77.08861, "id": "CLST_202604_N20_41586", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 22.9334, "lng": 76.11311, "id": "CLST_202604_N20_30577", "cls": "Uncertain / Ambiguous Event", "score": "0.50", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 29.63901, "lng": 80.00315, "id": "CLST_202604_N20_35332", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.43979, "lng": 82.10184, "id": "CLST_202604_N20_12267", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 19.27646, "lng": 81.08205, "id": "CLST_202604_N20_20089", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.13306, "lng": 80.93082, "id": "CLST_202604_N20_46703", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.96754, "lng": 94.64764, "id": "CLST_202604_N20_4524", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.25041, "lng": 84.02064, "id": "CLST_202604_N20_35958", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 19.38797, "lng": 83.21271, "id": "CLST_202604_N20_30310", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.42858, "lng": 94.04169, "id": "CLST_202604_N20_3234", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 20.30138, "lng": 85.04135, "id": "CLST_202604_N20_28956", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 24.79255, "lng": 93.3073, "id": "CLST_202604_N20_32039", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.16104, "lng": 94.03225, "id": "CLST_202604_N20_1197", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 29.83296, "lng": 79.16708, "id": "CLST_202604_N20_37356", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 25.13251, "lng": 77.29177, "id": "CLST_202604_N20_41258", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 19.3496, "lng": 83.16016, "id": "CLST_202604_N20_26895", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.28475, "lng": 94.52044, "id": "CLST_202604_N20_1993", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 20.35416, "lng": 84.71761, "id": "CLST_202604_N20_23238", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.05374, "lng": 81.33235, "id": "CLST_202604_N20_16568", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 23.36437, "lng": 94.0416, "id": "CLST_202604_N20_18804", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.03606, "lng": 94.7578, "id": "CLST_202604_N20_3203", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.46467, "lng": 94.13522, "id": "CLST_202604_N20_4210", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 19.33644, "lng": 82.68961, "id": "CLST_202604_N20_21695", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.14959, "lng": 94.38768, "id": "CLST_202604_N20_2961", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.72088, "lng": 94.05389, "id": "CLST_202604_N20_3244", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.68069, "lng": 94.01503, "id": "CLST_202604_N20_4218", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 29.84594, "lng": 79.13589, "id": "CLST_202604_N20_40788", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.15781, "lng": 94.21852, "id": "CLST_202604_N20_3218", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.57242, "lng": 94.50227, "id": "CLST_202604_N20_3943", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.84883, "lng": 93.74317, "id": "CLST_202604_N20_18765", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.03759, "lng": 94.30138, "id": "CLST_202604_N20_1975", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.31427, "lng": 81.36536, "id": "CLST_202604_N20_41933", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.72591, "lng": 94.13783, "id": "CLST_202604_N20_4682", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.86725, "lng": 93.92138, "id": "CLST_202604_N20_13402", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.32049, "lng": 94.49877, "id": "CLST_202604_N20_4204", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.84501, "lng": 94.02052, "id": "CLST_202604_N20_3249", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.6708, "lng": 94.10397, "id": "CLST_202604_N20_3946", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.85408, "lng": 94.09219, "id": "CLST_202604_N20_4518", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.28282, "lng": 94.41724, "id": "CLST_202604_N20_1992", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.6423, "lng": 94.15063, "id": "CLST_202604_N20_4216", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 24.36437, "lng": 80.95764, "id": "CLST_202604_N20_47493", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.43981, "lng": 94.39864, "id": "CLST_202604_N20_1207", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.73177, "lng": 94.04169, "id": "CLST_202604_N20_3950", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.26786, "lng": 94.45391, "id": "CLST_202604_N20_3223", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 26.65751, "lng": 84.76785, "id": "CLST_202604_N20_38624", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 25.13251, "lng": 81.36536, "id": "CLST_202604_N20_42951", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.84883, "lng": 94.13522, "id": "CLST_202604_N20_4689", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.46467, "lng": 94.21852, "id": "CLST_202604_N20_3236", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.68069, "lng": 94.10397, "id": "CLST_202604_N20_3948", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.03606, "lng": 94.38768, "id": "CLST_202604_N20_1977", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.36437, "lng": 81.68777, "id": "CLST_202604_N20_43872", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.57242, "lng": 94.01503, "id": "CLST_202604_N20_4214", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.72088, "lng": 94.15063, "id": "CLST_202604_N20_4680", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 24.46328, "lng": 81.42761, "id": "CLST_202604_N20_44665", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.16104, "lng": 94.50227, "id": "CLST_202604_N20_3934", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.32049, "lng": 94.13783, "id": "CLST_202604_N20_3232", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.86725, "lng": 94.04169, "id": "CLST_202604_N20_3251", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.42858, "lng": 94.52044, "id": "CLST_202604_N20_1996", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.31427, "lng": 80.84723, "id": "CLST_202604_N20_46950", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.28475, "lng": 94.05389, "id": "CLST_202604_N20_3226", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.84501, "lng": 94.15063, "id": "CLST_202604_N20_4687", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.6423, "lng": 94.02052, "id": "CLST_202604_N20_3242", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.73177, "lng": 94.09219, "id": "CLST_202604_N20_4514", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.05374, "lng": 94.41724, "id": "CLST_202604_N20_1979", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.26786, "lng": 94.10397, "id": "CLST_202604_N20_3940", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 24.56371, "lng": 81.33235, "id": "CLST_202604_N20_45233", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.43981, "lng": 94.13522, "id": "CLST_202604_N20_4208", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.85408, "lng": 94.01503, "id": "CLST_202604_N20_4222", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.14959, "lng": 94.21852, "id": "CLST_202604_N20_3216", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 26.54129, "lng": 84.66842, "id": "CLST_202604_N20_37719", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.6708, "lng": 94.39864, "id": "CLST_202604_N20_1215", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.33644, "lng": 94.45391, "id": "CLST_202604_N20_3225", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.03759, "lng": 94.05389, "id": "CLST_202604_N20_3220", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 24.18501, "lng": 81.25998, "id": "CLST_202604_N20_44102", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.72591, "lng": 94.02052, "id": "CLST_202604_N20_3247", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.42291, "lng": 94.41724, "id": "CLST_202604_N20_1995", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.84883, "lng": 94.09219, "id": "CLST_202604_N20_4516", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.28282, "lng": 94.50227, "id": "CLST_202604_N20_3937", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.28591, "lng": 81.36536, "id": "CLST_202604_N20_44781", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.68069, "lng": 94.13783, "id": "CLST_202604_N20_3240", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.57242, "lng": 94.15063, "id": "CLST_202604_N20_4677", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.03606, "lng": 94.52044, "id": "CLST_202604_N20_1978", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 26.73458, "lng": 84.58152, "id": "CLST_202604_N20_39011", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.85408, "lng": 94.13522, "id": "CLST_202604_N20_4688", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.46467, "lng": 94.01503, "id": "CLST_202604_N20_4212", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.73177, "lng": 94.15063, "id": "CLST_202604_N20_4681", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.14959, "lng": 94.49877, "id": "CLST_202604_N20_4201", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.36437, "lng": 81.42761, "id": "CLST_202604_N20_45001", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.32049, "lng": 94.02052, "id": "CLST_202604_N20_3230", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.6708, "lng": 94.04169, "id": "CLST_202604_N20_3947", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.86725, "lng": 94.09219, "id": "CLST_202604_N20_4517", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.05374, "lng": 94.30138, "id": "CLST_202604_N20_1981", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.26786, "lng": 94.39864, "id": "CLST_202604_N20_1204", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 24.79255, "lng": 81.68777, "id": "CLST_202604_N20_45892", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 21.43981, "lng": 94.50227, "id": "CLST_202604_N20_3942", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 21.84501, "lng": 94.04169, "id": "CLST_202604_N20_3248", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
+            {"lat": 22.86123, "lng": 82.02645, "id": "CLST_202604_N20_14381", "cls": "Uncertain / Ambiguous Event", "score": "0.75", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
+            {"lat": 23.964, "lng": 96.2244, "id": "CLST_202604_N20_23934", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"}
         ];
 
         const bottomPanel = document.getElementById('bottom-panel');
         const tdId = document.getElementById('td-id');
+        const tdCoords = document.getElementById('td-coords');
         const tdClass = document.getElementById('td-class');
         const tdScore = document.getElementById('td-score');
         const tdPath = document.getElementById('td-path');
@@ -270,22 +322,20 @@
             const customIcon = L.divIcon({
                 className: 'custom-marker',
                 html: `<div style="width: 100%; height: 100%; border-radius: 50%; background-color: ${markerColor};"></div>`,
-                iconSize: [16, 16],
+                iconSize: [15, 15],
                 iconAnchor: [8, 8],
                 popupAnchor: [0, -10]
             });
 
             const marker = L.marker([data.lat, data.lng], { icon: customIcon }).addTo(map);
             
-            // Add the "Viewing this" popup
             marker.bindPopup("Viewing this", { closeButton: false });
 
-            // Click event to update table and show popup
             marker.on('click', function (e) {
                 this.openPopup();
                 
-                // Update table details dynamically
                 tdId.innerText = data.id;
+                tdCoords.innerText = `${data.lat}, ${data.lng}`;
                 tdClass.innerText = data.cls;
                 tdScore.innerText = data.score;
                 tdPath.innerHTML = `<span class="${data.badge}">${data.path}</span>`;
