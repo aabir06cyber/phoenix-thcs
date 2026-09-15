@@ -6,9 +6,8 @@
     <title>Phoenix Monitoring Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS & JS -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #F3F4F6; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         #map { height: calc(100vh - 64px); width: 100%; z-index: 1; }
@@ -69,7 +68,6 @@
             font-size: 13px;
         }
         
-        /* High-Legibility Typography for Slide Presentation */
         table { width: 100%; border-collapse: collapse; margin-top: 14px; }
         th { text-align: left; padding: 12px 14px; border-bottom: 2px solid #E5E7EB; color: #4B5563; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
         td { padding: 16px 14px; border-bottom: 1px solid #F3F4F6; color: #111827; font-size: 16px; font-weight: 600; }
@@ -177,173 +175,8 @@
         </div>
     </div>
 
-    <script>
-        var map = L.map('map', {
-            zoomControl: false 
-        }).setView([22.5, 79.0], 5);
-
-        L.control.zoom({ position: 'topleft' }).addTo(map);
-
-        // Stadia Maps Light Theme
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-            maxZoom: 20
-        }).addTo(map);
-
-        const colors = {
-            'Wildfire / Forest Fire': '#10B981',    
-            'Industrial Fire': '#EF4444',  
-            'Persistent Industrial Activity': '#F59E0B',  
-            'Mining Activity': '#3B82F6',      
-            'Stubble Burning': '#8B5CF6',
-            'Uncertain / Ambiguous Event': '#4B5563' 
-        };
-
-        // 100 Real Clusters Directly Sampled from clusters_final_gee_ndvi.csv via notebook logic
-        const fireData = [
-            {"lat": 21.56127, "lng": 76.43035, "id": "CLST_202604_N20_20479", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 26.79845, "lng": 83.677, "id": "CLST_202604_N20_33206", "cls": "Uncertain / Ambiguous Event", "score": "0.50", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 25.77774, "lng": 77.08861, "id": "CLST_202604_N20_41586", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 22.9334, "lng": 76.11311, "id": "CLST_202604_N20_30577", "cls": "Uncertain / Ambiguous Event", "score": "0.50", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 29.63901, "lng": 80.00315, "id": "CLST_202604_N20_35332", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.43979, "lng": 82.10184, "id": "CLST_202604_N20_12267", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 19.27646, "lng": 81.08205, "id": "CLST_202604_N20_20089", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.13306, "lng": 80.93082, "id": "CLST_202604_N20_46703", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.96754, "lng": 94.64764, "id": "CLST_202604_N20_4524", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.25041, "lng": 84.02064, "id": "CLST_202604_N20_35958", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 19.38797, "lng": 83.21271, "id": "CLST_202604_N20_30310", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.42858, "lng": 94.04169, "id": "CLST_202604_N20_3234", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 20.30138, "lng": 85.04135, "id": "CLST_202604_N20_28956", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 24.79255, "lng": 93.3073, "id": "CLST_202604_N20_32039", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.16104, "lng": 94.03225, "id": "CLST_202604_N20_1197", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 29.83296, "lng": 79.16708, "id": "CLST_202604_N20_37356", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 25.13251, "lng": 77.29177, "id": "CLST_202604_N20_41258", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 19.3496, "lng": 83.16016, "id": "CLST_202604_N20_26895", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.28475, "lng": 94.52044, "id": "CLST_202604_N20_1993", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 20.35416, "lng": 84.71761, "id": "CLST_202604_N20_23238", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.05374, "lng": 81.33235, "id": "CLST_202604_N20_16568", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 23.36437, "lng": 94.0416, "id": "CLST_202604_N20_18804", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.03606, "lng": 94.7578, "id": "CLST_202604_N20_3203", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.46467, "lng": 94.13522, "id": "CLST_202604_N20_4210", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 19.33644, "lng": 82.68961, "id": "CLST_202604_N20_21695", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.14959, "lng": 94.38768, "id": "CLST_202604_N20_2961", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.72088, "lng": 94.05389, "id": "CLST_202604_N20_3244", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.68069, "lng": 94.01503, "id": "CLST_202604_N20_4218", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 29.84594, "lng": 79.13589, "id": "CLST_202604_N20_40788", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.15781, "lng": 94.21852, "id": "CLST_202604_N20_3218", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.57242, "lng": 94.50227, "id": "CLST_202604_N20_3943", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.84883, "lng": 93.74317, "id": "CLST_202604_N20_18765", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.03759, "lng": 94.30138, "id": "CLST_202604_N20_1975", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.31427, "lng": 81.36536, "id": "CLST_202604_N20_41933", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.72591, "lng": 94.13783, "id": "CLST_202604_N20_4682", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.86725, "lng": 93.92138, "id": "CLST_202604_N20_13402", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.32049, "lng": 94.49877, "id": "CLST_202604_N20_4204", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.84501, "lng": 94.02052, "id": "CLST_202604_N20_3249", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.6708, "lng": 94.10397, "id": "CLST_202604_N20_3946", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.85408, "lng": 94.09219, "id": "CLST_202604_N20_4518", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.28282, "lng": 94.41724, "id": "CLST_202604_N20_1992", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.6423, "lng": 94.15063, "id": "CLST_202604_N20_4216", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 24.36437, "lng": 80.95764, "id": "CLST_202604_N20_47493", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.43981, "lng": 94.39864, "id": "CLST_202604_N20_1207", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.73177, "lng": 94.04169, "id": "CLST_202604_N20_3950", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.26786, "lng": 94.45391, "id": "CLST_202604_N20_3223", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 26.65751, "lng": 84.76785, "id": "CLST_202604_N20_38624", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 25.13251, "lng": 81.36536, "id": "CLST_202604_N20_42951", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.84883, "lng": 94.13522, "id": "CLST_202604_N20_4689", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.46467, "lng": 94.21852, "id": "CLST_202604_N20_3236", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.68069, "lng": 94.10397, "id": "CLST_202604_N20_3948", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.03606, "lng": 94.38768, "id": "CLST_202604_N20_1977", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.36437, "lng": 81.68777, "id": "CLST_202604_N20_43872", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.57242, "lng": 94.01503, "id": "CLST_202604_N20_4214", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.72088, "lng": 94.15063, "id": "CLST_202604_N20_4680", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 24.46328, "lng": 81.42761, "id": "CLST_202604_N20_44665", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.16104, "lng": 94.50227, "id": "CLST_202604_N20_3934", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.32049, "lng": 94.13783, "id": "CLST_202604_N20_3232", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.86725, "lng": 94.04169, "id": "CLST_202604_N20_3251", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.42858, "lng": 94.52044, "id": "CLST_202604_N20_1996", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.31427, "lng": 80.84723, "id": "CLST_202604_N20_46950", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.28475, "lng": 94.05389, "id": "CLST_202604_N20_3226", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.84501, "lng": 94.15063, "id": "CLST_202604_N20_4687", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.6423, "lng": 94.02052, "id": "CLST_202604_N20_3242", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.73177, "lng": 94.09219, "id": "CLST_202604_N20_4514", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.05374, "lng": 94.41724, "id": "CLST_202604_N20_1979", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.26786, "lng": 94.10397, "id": "CLST_202604_N20_3940", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 24.56371, "lng": 81.33235, "id": "CLST_202604_N20_45233", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.43981, "lng": 94.13522, "id": "CLST_202604_N20_4208", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.85408, "lng": 94.01503, "id": "CLST_202604_N20_4222", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.14959, "lng": 94.21852, "id": "CLST_202604_N20_3216", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 26.54129, "lng": 84.66842, "id": "CLST_202604_N20_37719", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.6708, "lng": 94.39864, "id": "CLST_202604_N20_1215", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.33644, "lng": 94.45391, "id": "CLST_202604_N20_3225", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.03759, "lng": 94.05389, "id": "CLST_202604_N20_3220", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 24.18501, "lng": 81.25998, "id": "CLST_202604_N20_44102", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.72591, "lng": 94.02052, "id": "CLST_202604_N20_3247", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.42291, "lng": 94.41724, "id": "CLST_202604_N20_1995", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.84883, "lng": 94.09219, "id": "CLST_202604_N20_4516", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.28282, "lng": 94.50227, "id": "CLST_202604_N20_3937", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.28591, "lng": 81.36536, "id": "CLST_202604_N20_44781", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.68069, "lng": 94.13783, "id": "CLST_202604_N20_3240", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.57242, "lng": 94.15063, "id": "CLST_202604_N20_4677", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.03606, "lng": 94.52044, "id": "CLST_202604_N20_1978", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 26.73458, "lng": 84.58152, "id": "CLST_202604_N20_39011", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.85408, "lng": 94.13522, "id": "CLST_202604_N20_4688", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.46467, "lng": 94.01503, "id": "CLST_202604_N20_4212", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.73177, "lng": 94.15063, "id": "CLST_202604_N20_4681", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.14959, "lng": 94.49877, "id": "CLST_202604_N20_4201", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.36437, "lng": 81.42761, "id": "CLST_202604_N20_45001", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.32049, "lng": 94.02052, "id": "CLST_202604_N20_3230", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.6708, "lng": 94.04169, "id": "CLST_202604_N20_3947", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.86725, "lng": 94.09219, "id": "CLST_202604_N20_4517", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.05374, "lng": 94.30138, "id": "CLST_202604_N20_1981", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.26786, "lng": 94.39864, "id": "CLST_202604_N20_1204", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 24.79255, "lng": 81.68777, "id": "CLST_202604_N20_45892", "cls": "Stubble Burning", "score": "0.88", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 21.43981, "lng": 94.50227, "id": "CLST_202604_N20_3942", "cls": "Wildfire / Forest Fire", "score": "0.68", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 21.84501, "lng": 94.04169, "id": "CLST_202604_N20_3248", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"},
-            {"lat": 22.86123, "lng": 82.02645, "id": "CLST_202604_N20_14381", "cls": "Uncertain / Ambiguous Event", "score": "0.75", "path": "Slow (Stream 2 - Qwen2-VL)", "badge": "badge-slow"},
-            {"lat": 23.964, "lng": 96.2244, "id": "CLST_202604_N20_23934", "cls": "Wildfire / Forest Fire", "score": "0.85", "path": "Fast (Stream 1)", "badge": "badge-fast"}
-        ];
-
-        const bottomPanel = document.getElementById('bottom-panel');
-        const tdId = document.getElementById('td-id');
-        const tdCoords = document.getElementById('td-coords');
-        const tdClass = document.getElementById('td-class');
-        const tdScore = document.getElementById('td-score');
-        const tdPath = document.getElementById('td-path');
-
-        function closePanel() {
-            bottomPanel.style.display = 'none';
-            map.closePopup();
-        }
-
-        // Plot markers
-        fireData.forEach(data => {
-            const markerColor = colors[data.cls] || '#1F2937';
-            
-            const customIcon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div style="width: 100%; height: 100%; border-radius: 50%; background-color: ${markerColor};"></div>`,
-                iconSize: [15, 15],
-                iconAnchor: [8, 8],
-                popupAnchor: [0, -10]
-            });
-
-            const marker = L.marker([data.lat, data.lng], { icon: customIcon }).addTo(map);
-            
-            marker.bindPopup("Viewing this", { closeButton: false });
-
-            marker.on('click', function (e) {
-                this.openPopup();
-                
-                tdId.innerText = data.id;
-                tdCoords.innerText = `${data.lat}, ${data.lng}`;
-                tdClass.innerText = data.cls;
-                tdScore.innerText = data.score;
-                tdPath.innerHTML = `<span class="${data.badge}">${data.path}</span>`;
-                
-                bottomPanel.style.display = 'block';
-            });
-        });
-
-    </script>
+    <!-- Leaflet JS & External App Script -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="mapinfo.js"></script>
 </body>
 </html>
