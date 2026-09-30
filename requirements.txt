@@ -6,8 +6,8 @@ huggingface_hub
 numpy
 pandas
 Pillow
-pydantic
-pydantic_settings
+pydantic>=2.0.0
+pydantic_settings>=2.0.0
 qwen_vl_utils
 Requests
 scikit_learn
