@@ -17,3 +17,8 @@ transformers
 tokenizers
 uvicorn[standard]
 greenlet
+asyncpg
+opencv-python-headless
+accelerate
+bitsandbytes
+open_clip_torch
