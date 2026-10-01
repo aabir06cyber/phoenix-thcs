@@ -187,7 +187,6 @@ async def create_cluster(
     new_cluster = db_models.clusters(**cluster_data)
     db.add(new_cluster)
     await db.commit()
-    await db.refresh(new_cluster)
 
     backgroundtasks.add_task(run_engine)
 
