@@ -237,12 +237,30 @@ async def get_cluster_info(cluster_id: str, db: AsyncSession = Depends(get_db)):
     return query_result
 
 @router.get("/streaming/streams/sse_update")
-async def sse_update(request: Request):
+async def sse_update(request: Request, db: AsyncSession = Depends(get_db)):
     async def generator():
         client = asyncio.Queue()
         connected_clients.append(client)
 
         try:
+             # 1. INITIAL HYDRATION: Fetch and serialize clusters instantly using Pydantic
+            try:
+                result = await db.execute(
+                    select(db_models.clusters)
+                    .options(selectinload(db_models.clusters.analysis_bp))
+                    .order_by(db_models.clusters.last_seen.desc())
+                    .limit(500)
+                )
+                clusters = result.scalars().all()
+                
+                # Convert ORM models to Pydantic models, then dump to JSON-compatible dicts
+                pydantic_clusters = [schemas.ClusterModel.model_validate(c) for c in clusters]
+                cluster_data = [p.model_dump(mode='json') for p in pydantic_clusters]
+                
+                yield f"data:{json.dumps(cluster_data)}\n\n"
+            except Exception as e:
+                print(f"Error sending initial cluster hydration: {e}")
+            # 2. second part - real time data
             while True:
                 if await request.is_disconnected():
                     break
