@@ -197,19 +197,14 @@ async def create_cluster(
 
     await db.commit()
 
-    # 3. Query it back safely with selectinload so the relationship is populated for the response model
-    stmt = (
-        select(db_models.clusters)
-        .options(selectinload(db_models.clusters.analysis_bp))
-        .where(db_models.clusters.cluster_id == new_cluster.cluster_id)
-    )
-    result = await db.execute(stmt)
-    saved_cluster = result.scalars().first()
+    # 3. Attach the analysis data directly to the Pydantic-compatible object in memory
+    # This completely avoids any post-insert SELECT queries that trigger the asyncpg OID 25 error.
+    if cluster.analysis_bp:
+        new_cluster.analysis_bp = new_analysis
 
     backgroundtasks.add_task(run_engine)
-
-    return saved_cluster
-
+    
+    return new_cluster
 
 @router.get("/", response_model=list[schemas.ClusterModel])
 async def list_clusters(limit: int = 500, db: AsyncSession = Depends(get_db)):
