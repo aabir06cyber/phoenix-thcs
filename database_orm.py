@@ -8,7 +8,8 @@ engine = create_async_engine(
     database_url,
     pool_size = 5,
     max_overflow = 10,
-    echo=False)
+    echo=False,
+    connect_args={"statement_cache_size": 0})
 
 session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False, autoflush=False)
 
