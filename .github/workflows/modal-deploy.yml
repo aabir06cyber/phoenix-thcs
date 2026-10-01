@@ -1,0 +1,28 @@
+name: Deploy Modal worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - modal_app.py
+      - engine.py
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Modal
+        run: pip install modal
+      - name: Deploy
+        run: modal deploy modal_app.py
+      - name: Smoke test (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
+        run: modal run modal_app.py
