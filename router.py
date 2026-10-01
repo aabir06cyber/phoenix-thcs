@@ -247,6 +247,7 @@ async def sse_update(request: Request, db: AsyncSession = Depends(get_db)):
             try:
                 result = await db.execute(
                     select(db_models.clusters)
+                    .join(db_models.analysis_history)  # <--- THIS INNER JOIN FIXES IT
                     .options(selectinload(db_models.clusters.analysis_bp))
                     .order_by(db_models.clusters.last_seen.desc())
                     .limit(500)
