@@ -208,13 +208,17 @@ async def create_cluster(
 
 @router.get("/", response_model=list[schemas.ClusterModel])
 async def list_clusters(limit: int = 500, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
+    try:
+        result = await db.execute(
         select(db_models.clusters)
         .options(selectinload(db_models.clusters.analysis_bp))
         .order_by(db_models.clusters.last_seen.desc())
         .limit(limit)
-    )
-    return result.scalars().all()
+        )
+        return result.scalars().all()
+    except Exception as e:
+        print(f"CRITICAL ERROR: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{cluster_id}", response_model=schemas.ClusterModel)
