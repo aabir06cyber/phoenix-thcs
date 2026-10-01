@@ -183,14 +183,33 @@ async def create_cluster(
     backgroundtasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
+    # 1. Insert the cluster record
     cluster_data = cluster.model_dump(exclude={"analysis_bp"})
     new_cluster = db_models.clusters(**cluster_data)
     db.add(new_cluster)
+    
+    # 2. Insert the analysis history record if provided
+    if cluster.analysis_bp:
+        analysis_data = cluster.analysis_bp.model_dump()
+        analysis_data["cluster_id"] = new_cluster.cluster_id
+        new_analysis = db_models.analysis_history(**analysis_data)
+        db.add(new_analysis)
+
     await db.commit()
+
+    # 3. Query it back safely with selectinload so the relationship is populated for the response model
+    stmt = (
+        select(db_models.clusters)
+        .options(selectinload(db_models.clusters.analysis_bp))
+        .where(db_models.clusters.cluster_id == new_cluster.cluster_id)
+    )
+    result = await db.execute(stmt)
+    saved_cluster = result.scalars().first()
 
     backgroundtasks.add_task(run_engine)
 
-    return new_cluster
+    return saved_cluster
+
 
 @router.get("/", response_model=list[schemas.ClusterModel])
 async def list_clusters(limit: int = 500, db: AsyncSession = Depends(get_db)):
