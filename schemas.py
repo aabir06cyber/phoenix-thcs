@@ -1,5 +1,5 @@
 #DATABASE SCHEMAS
-from pydantic import BaseModel, ConfigDict, model_json_schema
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class ResponseModel(BaseModel):
