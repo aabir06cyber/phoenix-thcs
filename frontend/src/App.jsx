@@ -40,9 +40,16 @@ export default function App() {
     dispatch({ type: 'merge', items: [fromDetail(d)] });
   }, []);
 
-  // ---- SSE events -------------------------------------------------------
+// ---- SSE events -------------------------------------------------------
   const handleEvent = useCallback(
     (evt) => {
+      // 1. CATCH INITIAL HYDRATION: If the backend sends the array of 500 clusters
+      if (Array.isArray(evt)) {
+        dispatch({ type: 'merge', items: evt.map(fromDetail) });
+        return;
+      }
+
+      // 2. LIVE UPDATES: Handle single events
       const id = evt.cluster_id;
       if (!id) return;
 
@@ -65,7 +72,6 @@ export default function App() {
           `${evt.final_class} classified near [${Number(evt.latitude).toFixed(2)}, ${Number(evt.longitude).toFixed(2)}].`,
           id
         );
-        // The SSE payload has no confidence / route / persistence; fetch them.
         loadDetail(id).catch(() => {});
       } else if (evt.event === 'cluster_updated') {
         dispatch({
@@ -77,7 +83,6 @@ export default function App() {
           `Persistent thermal source confirmed: ${id} active for ${evt.active_days} days.`,
           id
         );
-        // Payload has no coordinates, so this also places the marker if we haven't seen it yet.
         loadDetail(id).catch(() => {});
       }
     },
