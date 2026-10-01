@@ -41,9 +41,19 @@ export default function Header({ apiUp, streamStatus, clusterCount }) {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* New Auto-Sync Schedule Badge */}
+        <div className="hidden items-center gap-2 rounded border border-gray-200 bg-slate-50 px-3 py-1.5 text-xs xl:flex">
+          <svg className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium text-gray-500">Auto-Sync (IST):</span>
+          <span className="font-semibold text-slate-700">04:30, 05:30, 16:30, 17:30</span>
+        </div>
+
         <div className="hidden text-xs font-medium text-gray-500 sm:block">
           <span className="font-bold text-gray-800">{clusterCount}</span> clusters on map
         </div>
+        
         <Pill label="API" value={api.v} tone={api.t} />
         <Pill label="Live feed" value={stream.v} tone={stream.t} />
       </div>
