@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     algorithm: str
 
     gee_project: str
+    gee_service_account_json: str|None = None
     firms_map_key: str
     
     class Config:
