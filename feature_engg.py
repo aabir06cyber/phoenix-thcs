@@ -128,7 +128,7 @@ async def enrich_cluster_features(lat: float, lon: float, first_seen: datetime, 
         ndvi_val = safe_float(ndvi_dict.get("ndvi")) if ndvi_dict else None
     except Exception as ee_err:
         # If GEE is uninitialized or times out, proceed gracefully without crashing the pipeline
-        pass
+        print(f"[GEE ERROR] Failed to fetch LULC/NDVI for ({lat},{lon}): {ee_err}")
         
 
     return {
