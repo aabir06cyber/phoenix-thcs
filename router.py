@@ -10,7 +10,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 import asyncio, json, traceback
 import modal
-
+from datetime import datetime
 router = APIRouter(prefix="/api/v1.2/clusters", tags=["cluster", "clusters"])
 connected_clients = []
 
@@ -289,8 +289,8 @@ async def test_pipeline_direct(db: AsyncSession = Depends(get_db)):
         "cluster_id": "CLST_MANUAL_TEST_002",
         "centroid_latitude": 25.1800,
         "centroid_longitude": 75.8300,
-        "first_seen": "2026-10-02T17:42:00",
-        "last_seen": "2026-10-02T17:48:30",
+        "first_seen": datetime.fromisoformat("2026-10-02T17:42:00"),
+        "last_seen": datetime.fromisoformat("2026-10-02T17:48:30"),
         "total_detections_in_month": 1,
         "active_days_count": 1,
         "mean_frp_mw": 30.0,
