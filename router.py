@@ -286,16 +286,24 @@ async def sse_update(request: Request, db: AsyncSession = Depends(get_db)):
 async def test_pipeline_direct(db: AsyncSession = Depends(get_db)):
     """Runs a single test point through GEE and Modal without touching real ingestion."""
     sample = {
-        "cluster_id": "CLST_MANUAL_TEST_002",
-        "centroid_latitude": 25.1800,
-        "centroid_longitude": 75.8300,
-        "first_seen": datetime.fromisoformat("2026-10-02T17:42:00"),
-        "last_seen": datetime.fromisoformat("2026-10-02T17:48:30"),
+        "cluster_id": "CLST_MANUAL_TEST_003",
+        "centroid_latitude": 30.2450,
+        "centroid_longitude": 75.8420,
+        "first_seen": datetime.fromisoformat("2026-10-02T17:56:00"),
+        "last_seen": datetime.fromisoformat("2026-10-02T17:59:00"),
         "total_detections_in_month": 1,
         "active_days_count": 1,
-        "mean_frp_mw": 30.0,
-        "max_frp_mw": 40.0,
-        "max_brightness_kelvin": 330.0,
+        "mean_frp_mw": 28.0,
+        "max_frp_mw": 35.0,
+        "max_brightness_kelvin": 332.0,
+        "dist_to_industrial_m": 12000.0,
+        "is_near_industrial": False,
+        "dist_to_quarry_m": 25000.0,
+        "is_near_quarry": False,
+        "dist_to_power_m": 18000.0,
+        "is_near_power": False,
+        "dist_to_factory_m": 14000.0,
+        "is_near_factory": False,
     }
     # Calls your existing internal helper directly:
     await _create_and_classify_cluster(db, sample)
