@@ -280,3 +280,23 @@ async def sse_update(request: Request, db: AsyncSession = Depends(get_db)):
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+#test endpoint-remove later
+@router.post("/test-pipeline-direct")
+async def test_pipeline_direct(db: AsyncSession = Depends(get_db)):
+    """Runs a single test point through GEE and Modal without touching real ingestion."""
+    sample = {
+        "cluster_id": "CLST_MANUAL_TEST_002",
+        "centroid_latitude": 25.1800,
+        "centroid_longitude": 75.8300,
+        "first_seen": "2026-10-02T17:42:00",
+        "last_seen": "2026-10-02T17:48:30",
+        "total_detections_in_month": 1,
+        "active_days_count": 1,
+        "mean_frp_mw": 30.0,
+        "max_frp_mw": 40.0,
+        "max_brightness_kelvin": 330.0,
+    }
+    # Calls your existing internal helper directly:
+    await _create_and_classify_cluster(db, sample)
+    return {"status": "success", "cluster_id": sample["cluster_id"]}
