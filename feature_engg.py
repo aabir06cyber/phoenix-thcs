@@ -115,7 +115,7 @@ async def enrich_cluster_features(lat: float, lon: float, first_seen: datetime, 
     lulc_code, lulc_label, ndvi_val = None, "Uncertain / Ambiguous Event", None
     try:
         pt = ee.Geometry.Point([lon, lat])
-        esri = ee.ImageCollection("projects/sat-io/open-datasets/landcover/ESRI_Global-LCC_10m").filterBounds(pt).first()
+        esri = ee.ImageCollection("projects/sat-io/open-datasets/landcover/ESRI_Global-LULC_10m_TS").filterBounds(pt).first()
         code = esri.reduceRegion(ee.Reducer.first(), pt, scale=10).get("b1").getInfo()
         if code is not None:
             lulc_code = int(code)
