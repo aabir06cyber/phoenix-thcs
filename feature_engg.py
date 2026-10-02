@@ -67,7 +67,7 @@ async def fetch_and_cluster_firms(db: AsyncSession, country_bbox: str = "68,6,98
     for label, group in df[df["cluster_label"] != -1].groupby("cluster_label"):
         # Match your exact requested format: CLST_YYYYMM_SAT_0000
         sat_id = group["sat_label"].iloc[0]
-        ym = group['acq_timestamp'].min().strftime('%Y%m')
+        ym = group['acq_timestamp'].min().strftime('%Y%m%dH%H')
         cluster_id = f"CLST_{ym}_{sat_id}_{label:04d}"
         
         clusters.append({
@@ -116,7 +116,7 @@ async def enrich_cluster_features(lat: float, lon: float, first_seen: datetime, 
     try:
         pt = ee.Geometry.Point([lon, lat])
         esri = ee.ImageCollection("projects/sat-io/open-datasets/landcover/ESRI_Global-LULC_10m_TS").filterBounds(pt).first()
-        code = esri.reduceRegion(ee.Reducer.first(), pt, scale=10).get("b1").getInfo()
+        code = esri.select("b1").remap([1, 2, 4, 5, 7, 8, 9, 10, 11], [1, 2, 3, 4, 5, 6, 7, 8, 9]).reduceRegion(ee.Reducer.first(), pt, scale=10).get("remapped").getInfo()
         if code is not None:
             lulc_code = int(code)
             lulc_label = ESRI_LULC_CLASSES.get(lulc_code, "Uncertain / Ambiguous Event")
