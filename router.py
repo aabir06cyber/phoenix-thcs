@@ -285,26 +285,18 @@ async def sse_update(request: Request, db: AsyncSession = Depends(get_db)):
 @router.post("/test-pipeline-direct")
 async def test_pipeline_direct(db: AsyncSession = Depends(get_db)):
     """Runs a single test point through GEE and Modal without touching real ingestion."""
-    sample = {
-        "cluster_id": "CLST_20261002H18_N20_0002",
-        "centroid_latitude": 22.3550,
-        "centroid_longitude": 69.8650,
-        "first_seen": datetime(2026, 10, 2, 18, 0, 0),
-        "last_seen": datetime(2026, 10, 2, 18, 25, 0),
-        "total_detections_in_month": 4,
-        "active_days_count": 3,
-        "mean_frp_mw": 85.0,
-        "max_frp_mw": 120.0,
-        "max_brightness_kelvin": 365.0,
-        "dist_to_industrial_m": 80.0,
-        "is_near_industrial": True,
-        "dist_to_quarry_m": 18000.0,
-        "is_near_quarry": False,
-        "dist_to_power_m": 1200.0,
-        "is_near_power": True,
-        "dist_to_factory_m": 150.0,
-        "is_near_factory": True,
-    }
+        sample = {
+        "cluster_id": "CLST_20261002H18_N20_0005",
+        "centroid_latitude": 21.8550,
+        "centroid_longitude": 86.3350,
+        "first_seen": datetime.fromisoformat("2026-10-02T18:46:00"),
+        "last_seen": datetime.fromisoformat("2026-10-02T18:55:00"),
+        "total_detections_in_month": 2,
+        "active_days_count": 1,
+        "mean_frp_mw": 55.0,
+        "max_frp_mw": 75.0,
+        "max_brightness_kelvin": 345.0,
+        }
     # Calls your existing internal helper directly:
     await _create_and_classify_cluster(db, sample)
     return {"status": "success", "cluster_id": sample["cluster_id"]}
