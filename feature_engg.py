@@ -111,27 +111,25 @@ async def enrich_cluster_features(lat: float, lon: float, first_seen: datetime, 
     d_pow = safe_float(row.get("dist_to_power_m"))
     d_fac = safe_float(row.get("dist_to_factory_m"))
 
-    # 2. GEE Point Sampling (LULC & NDVI)
-    pt = ee.Geometry.Point([lon, lat])
+    # 2. GEE Point Sampling (LULC & NDVI) — wrapped safely against uninitialized GEE
     lulc_code, lulc_label, ndvi_val = None, "Uncertain / Ambiguous Event", None
-    
     try:
+        pt = ee.Geometry.Point([lon, lat])
         esri = ee.ImageCollection("projects/sat-io/open-datasets/landcover/ESRI_Global-LCC_10m").filterBounds(pt).first()
         code = esri.reduceRegion(ee.Reducer.first(), pt, scale=10).get("b1").getInfo()
         if code is not None:
             lulc_code = int(code)
             lulc_label = ESRI_LULC_CLASSES.get(lulc_code, "Uncertain / Ambiguous Event")
-    except Exception:
-        pass
 
-    try:
         t_start = (first_seen - timedelta(days=20)).strftime("%Y-%m-%d")
         t_end = (first_seen + timedelta(days=20)).strftime("%Y-%m-%d")
         s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED").filterBounds(pt).filterDate(t_start, t_end).sort("CLOUDY_PIXEL_PERCENTAGE").first()
         ndvi_dict = s2.normalizedDifference(["B8", "B4"]).rename("ndvi").reduceRegion(ee.Reducer.mean(), pt, scale=10).getInfo()
         ndvi_val = safe_float(ndvi_dict.get("ndvi")) if ndvi_dict else None
-    except Exception:
+    except Exception as ee_err:
+        # If GEE is uninitialized or times out, proceed gracefully without crashing the pipeline
         pass
+        
 
     return {
         "dist_to_industrial_m": d_ind, "is_near_industrial": bool(d_ind and d_ind < 1000.0),
