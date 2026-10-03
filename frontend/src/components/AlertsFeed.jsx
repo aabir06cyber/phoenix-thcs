@@ -19,7 +19,9 @@ export default function AlertsFeed({ alerts, onLocate }) {
         </svg>
         System Alerts
       </h2>
-
+      
+      <p className="mb-3 text-xs italic text-gray-500">Click on a cluster to view more details</p>
+      
       {alerts.length === 0 ? (
         <p className="text-sm text-gray-500">Waiting for live detections…</p>
       ) : (
