@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl, GeoJSON, Pane, useMap } from 'react-leaflet';
 import { MAP, TILES } from '../config';
 import { categorize } from '../lib/classification';
+
+import indiaBoundary from '../data/india-boundary.json';
+const BOUNDARY_STYLE = { color: '#374151', weight: 1.5, fillOpacity: 0, interactive: false };
 
 function FlyTo({ target }) {
   const map = useMap();
@@ -27,7 +30,11 @@ export default function MapView({ clusters, selectedId, onSelect, flyTarget }) {
       <ZoomControl position="topleft" />
       <TileLayer url={TILES.url} attribution={TILES.attribution} maxZoom={TILES.maxZoom} />
       <FlyTo target={flyTarget} />
-
+      
+      <Pane name="india-boundary" style={{ zIndex: 450, pointerEvents: 'none' }}>
+        <GeoJSON data={indiaBoundary} style={() => BOUNDARY_STYLE} />
+      </Pane>
+      
       {clusters.map((c) => {
         const cat = categorize(c.final_class, c.is_persistant);
         const isSelected = c.cluster_id === selectedId;
