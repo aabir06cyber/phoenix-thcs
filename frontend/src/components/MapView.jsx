@@ -4,7 +4,7 @@ import { MAP, TILES } from '../config';
 import { categorize } from '../lib/classification';
 
 import indiaBoundary from '../data/india-boundary.json';
-const BOUNDARY_STYLE = { color: '#9e1b1b', weight: 1, opacity: 0.6, fillOpacity: 0, interactive: false };
+const BOUNDARY_STYLE = { color: '#9e1b1b', weight: 1, opacity: 0.3, fillOpacity: 0, interactive: false };
 
 function FlyTo({ target }) {
   const map = useMap();
