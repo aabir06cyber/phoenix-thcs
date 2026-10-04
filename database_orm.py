@@ -7,7 +7,8 @@ database_url = settings.database_url
 engine = create_async_engine(
     database_url,
     pool_size = 5,
-    max_overflow = 10,
+    pool_pre_ping = True,
+max_overflow = 10,
     echo=False,
     connect_args={"statement_cache_size": 0})
 
